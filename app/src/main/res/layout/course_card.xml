@@ -12,14 +12,35 @@
             android:id="@+id/courseNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Course Name"/>
+            android:text="Course Name" />
 
         <TextView
             android:id="@+id/creditsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_below="@id/courseNameTextView"
             android:text="Credits" />
+
+        <TextView
+            android:id="@+id/classesAttendedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/creditsTextView"
+            android:text="Classes Attended" />
+
+        <TextView
+            android:id="@+id/classesHeldTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/classesAttendedTextView"
+            android:text="Classes Held" />
+
+        <TextView
+            android:id="@+id/attendancePercentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/classesHeldTextView"
+            android:text="Attendance Percent" />
 
     </RelativeLayout>
 
