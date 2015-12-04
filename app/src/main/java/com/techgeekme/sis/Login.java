@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -56,10 +55,9 @@ public class Login extends AppCompatActivity {
 
             @Override
             protected void deliverResponse(byte[] responseBytes) {
-                Log.i("Login", new String(responseBytes));
                 ByteArrayInputStream bais = new ByteArrayInputStream(responseBytes);
-                ObjectInputStream ois = null;
-                Student s = null;
+                ObjectInputStream ois;
+                Student s;
                 try {
                     ois = new ObjectInputStream(bais);
                     s = (Student) ois.readObject();
