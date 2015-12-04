@@ -6,7 +6,7 @@
     <LinearLayout
 
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <EditText
@@ -15,16 +15,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="36dp"
             android:hint="USN"
-            android:inputType="text" />
+            android:inputType="textCapCharacters" />
 
         <EditText
-            android:id="@+id/password_edit_text"
+            android:id="@+id/dob_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="36dp"
             android:layout_marginRight="36dp"
-            android:hint="Password"
-            android:inputType="textPassword" />
+            android:hint="DOB" />
 
         <Button
             android:id="@+id/login_button"
