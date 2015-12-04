@@ -1,13 +1,13 @@
 package com.techgeekme.sis;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -22,12 +22,11 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import android.content.SharedPreferences;
 
 public class Login extends AppCompatActivity {
-    Button loginButton;
     public static final String PREFS_NAME = "Credentials";
-    DatabaseManager database = new DatabaseManager(getApplicationContext());
+    private Button loginButton;
+    private DatabaseManager database = new DatabaseManager(getApplicationContext());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
