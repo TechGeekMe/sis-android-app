@@ -7,9 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPimaryDark</item>
         <item name="colorAccent">@color/colorPimaryDark</item>
         <item name="android:textViewStyle">@style/TextStyle</item>
+        <item name="colorButtonNormal">@color/colorPrimary</item>
     </style>
 
-    <style name="AppDialogTheme" parent="android:Theme.Dialog">
+    <style name="AppDialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPimaryDark</item>

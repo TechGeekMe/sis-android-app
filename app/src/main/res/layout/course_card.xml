@@ -58,7 +58,7 @@
                 android:layout_gravity="center_vertical"
                 android:padding="8dp"
                 android:text="99%"
-                android:textColor="@color/textTitle"
+                android:textColor="@color/textTitleColor"
                 android:textSize="56sp" />
 
             <LinearLayout

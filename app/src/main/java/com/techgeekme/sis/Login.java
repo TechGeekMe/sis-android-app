@@ -42,7 +42,7 @@ public class Login extends AppCompatActivity {
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
             }
         });
-        mProgressDialog = new ProgressDialog(this, R.style.AppDialogTheme);
+        mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Logging in");
         mProgressDialog.setCancelable(false);
@@ -50,8 +50,8 @@ public class Login extends AppCompatActivity {
 
     private void displaySis() {
         mProgressDialog.dismiss();
-        Intent mIntent = new Intent(this, Home.class);
-        startActivity(mIntent);
+        Intent intent = new Intent(this, Home.class);
+        startActivity(intent);
         finish();
     }
 

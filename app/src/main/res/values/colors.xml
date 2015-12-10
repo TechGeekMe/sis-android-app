@@ -6,5 +6,5 @@
     <color name="boxColor">#CFD8DC</color>
     <color name="boxTextColor">@color/primary_text_default_material_light</color>
     <color name="cardTextColor">@android:color/white</color>
-    <color name="textTitle">@color/primary_text_default_material_light</color>
+    <color name="textTitleColor">@color/primary_text_default_material_light</color>
 </resources>

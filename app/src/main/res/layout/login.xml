@@ -53,6 +53,7 @@
                 android:onClick="login"
                 android:padding="18dp"
                 android:text="login"
+                android:textColor="@android:color/white"
                 android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
