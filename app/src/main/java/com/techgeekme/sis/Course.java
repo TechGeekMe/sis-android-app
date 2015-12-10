@@ -15,5 +15,7 @@ public class Course implements Serializable {
     public String attendancePercent;
     public String classesAttended;
     public String classesHeld;
-    public ArrayList<String> tests = new ArrayList<String>();
+    public ArrayList<String> tests = new ArrayList<>();
+    public ArrayList<String> assignments = new ArrayList<>();
+
 }
