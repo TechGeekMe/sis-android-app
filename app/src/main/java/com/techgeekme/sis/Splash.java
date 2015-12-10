@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 
 /**
  * Created by anirudh on 20/07/15.
@@ -31,36 +30,16 @@ public class Splash extends Activity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                Intent intent;
             /* Create an Intent that will start the Menu-Activity. */
                 SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                 if (sharedPref.contains("usn")) {
-                    String usn = sharedPref.getString("usn", null);
-                    String dob = sharedPref.getString("dob", null);
-                    View v = findViewById(R.id.splash_screen_relative_layout);
-                    StudentFetcherErrorListener el = new StudentFetcherErrorListener(v) {
-                        @Override
-                        public void onStudentFetcherError() {
-                        }
-                    };
-
-                    String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
-
-                    StudentFetcher studentFetcher = new StudentFetcher(url, el) {
-                        @Override
-                        public void onStudentResponse(Student student) {
-                            mMainIntent = new Intent(Splash.this, Home.class);
-                            mMainIntent.putExtra("student_object", student);
-                            startActivity(mMainIntent);
-                            Splash.this.startActivity(mMainIntent);
-                            Splash.this.finish();
-                        }
-                    };
-                    studentFetcher.fetchStudent();
+                    intent = new Intent(Splash.this, Home.class);
                 } else {
-                    mMainIntent = new Intent(Splash.this, Login.class);
-                    Splash.this.startActivity(mMainIntent);
-                    Splash.this.finish();
+                    intent = new Intent(Splash.this, Login.class);
                 }
+                startActivity(intent);
+                finish();
             }
         }, SPLASH_DISPLAY_LENGTH);
     }

@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+
 public class Login extends AppCompatActivity {
     private Button mLoginButton;
     private EditText mDobEditText;
@@ -46,22 +48,27 @@ public class Login extends AppCompatActivity {
         mProgressDialog.setCancelable(false);
     }
 
-    private void displaySis(Student student) {
+    private void displaySis() {
         mProgressDialog.dismiss();
         Intent mIntent = new Intent(this, Home.class);
-        mIntent.putExtra("student_object", student);
         startActivity(mIntent);
         finish();
     }
 
-    private void storeLoginDetails(String usn, String dob) {
+    private void storeLoginDetails(String usn, String dob, String name) {
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("usn", usn);
         editor.putString("dob", dob);
+        editor.putString("name", name);
         editor.commit();
+
     }
 
+    private void storeCourses(ArrayList<Course> courses) {
+        DatabaseManager dm = new DatabaseManager(this);
+        dm.putCourses(courses);
+    }
 
     public void login(View v) {
         mProgressDialog.show();
@@ -81,8 +88,9 @@ public class Login extends AppCompatActivity {
         StudentFetcher studentFetcher = new StudentFetcher(url, el) {
             @Override
             public void onStudentResponse(Student s) {
-                displaySis(s);
-                storeLoginDetails(usn, dob);
+                storeLoginDetails(usn, dob, s.studentName);
+                storeCourses(s.courses);
+                displaySis();
             }
         };
 
