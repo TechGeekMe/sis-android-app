@@ -28,6 +28,7 @@ public abstract class StudentFetcherErrorListener implements Response.ErrorListe
         } else if (error.networkResponse.statusCode == 401) {
             Snackbar.make(mView, "Incorrect USN or DOB", Snackbar.LENGTH_INDEFINITE).show();
         }
+        onStudentFetcherError();
     }
 
     public abstract void onStudentFetcherError();

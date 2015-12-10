@@ -55,9 +55,7 @@
                 android:id="@+id/attendance_percent_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/course_details_linear_layout"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="16dp"
                 android:padding="8dp"
                 android:text="99%"
                 android:textColor="@color/textTitle"
@@ -93,7 +91,6 @@
             android:id="@+id/tests_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/attendance_percent_text_view"
             android:layout_margin="16dp"
             android:gravity="center"
             android:orientation="horizontal" />
@@ -102,7 +99,6 @@
             android:id="@+id/assignments_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tests_linear_layout"
             android:layout_margin="16dp"
             android:gravity="center"
             android:orientation="horizontal" />
