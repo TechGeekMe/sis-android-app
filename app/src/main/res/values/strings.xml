@@ -4,6 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="home_label">Home</string>
-
     <string name="server_url">http://sismsrit.azurewebsites.net/api</string>
+    <string name="preference_file_key">credentials_shared_pref</string>
 </resources>

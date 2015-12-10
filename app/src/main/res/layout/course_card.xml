@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/cardBackgroundColor"
         android:orientation="vertical">
 
         <LinearLayout
@@ -26,6 +27,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Intellectual Property Rights"
+                android:textColor="@android:color/white"
                 android:textSize="24sp" />
 
             <TextView
@@ -34,9 +36,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="8dp"
-                android:background="#EEEEEE"
                 android:padding="8dp"
                 android:text="CS514"
+                android:textColor="@android:color/white"
                 android:textSize="24sp" />
         </LinearLayout>
 
@@ -45,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="#EEEEEE"
+            android:background="@color/boxColor"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
@@ -58,6 +60,7 @@
                 android:layout_marginRight="16dp"
                 android:padding="8dp"
                 android:text="99%"
+                android:textColor="@color/textTitle"
                 android:textSize="56sp" />
 
             <LinearLayout
@@ -109,7 +112,7 @@
             android:id="@+id/credits_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#EEEEEE"
+            android:background="@color/boxColor"
             android:gravity="center_horizontal"
             android:text="Credits : 4"
             android:textAllCaps="true" />
