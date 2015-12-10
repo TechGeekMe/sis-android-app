@@ -2,46 +2,120 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/course_details_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/course_name_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Intellectual Property Rights"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/course_code_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:background="#EEEEEE"
+                android:padding="8dp"
+                android:text="CS514"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/attendance_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="#EEEEEE"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/attendance_percent_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/course_details_linear_layout"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="16dp"
+                android:padding="8dp"
+                android:text="99%"
+                android:textSize="56sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/attendance_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:padding="8dp"
+                    android:text="Attendance"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/attendance_fraction_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:text="53 / 55"
+                    android:textSize="34sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.techgeekme.sis.MarksLinearLayout
+            android:id="@+id/tests_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/attendance_percent_text_view"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:orientation="horizontal" />
+
+        <com.techgeekme.sis.MarksLinearLayout
+            android:id="@+id/assignments_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tests_linear_layout"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:orientation="horizontal" />
+
 
         <TextView
-            android:id="@+id/courseNameTextView"
-            android:layout_width="wrap_content"
+            android:id="@+id/credits_text_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Course Name" />
+            android:background="#EEEEEE"
+            android:gravity="center_horizontal"
+            android:text="Credits : 4"
+            android:textAllCaps="true" />
 
-        <TextView
-            android:id="@+id/creditsTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/courseNameTextView"
-            android:text="Credits" />
 
-        <TextView
-            android:id="@+id/classesAttendedTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/creditsTextView"
-            android:text="Classes Attended" />
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/classesHeldTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/classesAttendedTextView"
-            android:text="Classes Held" />
-
-        <TextView
-            android:id="@+id/attendancePercentTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/classesHeldTextView"
-            android:text="Attendance Percent" />
-
-    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

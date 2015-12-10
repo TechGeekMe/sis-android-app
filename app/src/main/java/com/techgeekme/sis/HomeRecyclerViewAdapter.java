@@ -28,10 +28,12 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     public void onBindViewHolder(CourseCardViewHolder holder, int position) {
         Course currentCourse = mCourses.get(position);
         holder.courseNameTextView.setText(currentCourse.courseName);
-        holder.creditsTextView.setText(currentCourse.credits);
-        holder.classesAttendedTextView.setText(currentCourse.classesAttended);
-        holder.classesHeldTextView.setText(currentCourse.classesHeld);
-        holder.attendancePercentTextView.setText(currentCourse.attendancePercent);
+        holder.creditsTextView.setText("Credits: " + currentCourse.credits);
+        holder.attendanceFractonTextView.setText(currentCourse.classesAttended + " / " + currentCourse.classesHeld);
+        holder.attendancePercentTextView.setText(currentCourse.attendancePercent + "%");
+        holder.courseCodeTextView.setText(currentCourse.courseCode);
+        holder.testsLinearLayout.setMarks(currentCourse.tests);
+        holder.assignmentLinearLayout.setMarks(currentCourse.assignments);
     }
 
     @Override
@@ -42,16 +44,22 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     public static class CourseCardViewHolder extends RecyclerView.ViewHolder {
         public TextView courseNameTextView;
         public TextView creditsTextView;
-        public TextView classesAttendedTextView;
-        public TextView classesHeldTextView;
         public TextView attendancePercentTextView;
+        public TextView courseCodeTextView;
+        public MarksLinearLayout testsLinearLayout;
+        public MarksLinearLayout assignmentLinearLayout;
+        public TextView attendanceFractonTextView;
         public CourseCardViewHolder(View subjectCardView) {
             super(subjectCardView);
-            courseNameTextView = (TextView) subjectCardView.findViewById(R.id.courseNameTextView);
-            creditsTextView = (TextView) subjectCardView.findViewById(R.id.creditsTextView);
-            attendancePercentTextView = (TextView) subjectCardView.findViewById(R.id.attendancePercentTextView);
-            classesAttendedTextView = (TextView) subjectCardView.findViewById(R.id.classesAttendedTextView);
-            classesHeldTextView = (TextView) subjectCardView.findViewById(R.id.classesHeldTextView);
+            courseNameTextView = (TextView) subjectCardView.findViewById(R.id.course_name_text_view);
+            creditsTextView = (TextView) subjectCardView.findViewById(R.id.credits_text_view);
+            attendancePercentTextView = (TextView) subjectCardView.findViewById(R.id.attendance_percent_text_view);
+            attendanceFractonTextView = (TextView) subjectCardView.findViewById(R.id.attendance_fraction_text_view);
+            courseCodeTextView = (TextView) subjectCardView.findViewById(R.id.course_code_text_view);
+            testsLinearLayout = (MarksLinearLayout) subjectCardView.findViewById(R.id.tests_linear_layout);
+            assignmentLinearLayout = (MarksLinearLayout) subjectCardView.findViewById(R.id.assignments_linear_layout);
+            testsLinearLayout.setTitle("Test");
+            assignmentLinearLayout.setTitle("Assignment");
         }
     }
 
