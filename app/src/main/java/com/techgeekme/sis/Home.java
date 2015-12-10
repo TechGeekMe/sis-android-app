@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.TextView;
 
 
 public class Home extends AppCompatActivity {
@@ -20,7 +19,7 @@ public class Home extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         Student student = (Student) b.getSerializable("student_object");
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.homeRecyclerView);
+        mRecyclerView = (RecyclerView) findViewById(R.id.home_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
