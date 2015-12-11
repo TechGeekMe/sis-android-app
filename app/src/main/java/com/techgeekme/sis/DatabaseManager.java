@@ -94,7 +94,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 ContentValues values2 = new ContentValues();
                 values2.put(KEY_COURSE_CODE, course.courseCode);
                 values2.put(KEY_TEST_NUMBER, j);
-                values2.put(KEY_MARKS, tests.get(j));
+                values2.put(KEY_MARKS, assignments.get(j));
                 db.insert(TABLE_ASSIGNMENT, null, values2);
             }
             db.insert(TABLE_COURSE, null, values1);
@@ -145,6 +145,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + TABLE_COURSE);
         db.execSQL("delete from " + TABLE_TEST);
+        db.execSQL("delete from " + TABLE_ASSIGNMENT);
     }
 
 }
