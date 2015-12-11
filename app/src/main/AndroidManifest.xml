@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="23" />
+
     <application
         android:name="com.techgeekme.sis.VolleyApplication"
         android:allowBackup="true"
@@ -12,10 +16,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Login"
-            android:label="@string/login"></activity>
+            android:label="@string/login" />
         <activity
             android:name=".Home"
-            android:label="@string/home_label"></activity>
+            android:label="@string/home_label" />
         <activity android:name=".Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

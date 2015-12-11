@@ -61,7 +61,7 @@ public class Login extends AppCompatActivity {
         editor.putString("usn", usn);
         editor.putString("dob", dob);
         editor.putString("name", name);
-        editor.commit();
+        editor.apply();
 
     }
 

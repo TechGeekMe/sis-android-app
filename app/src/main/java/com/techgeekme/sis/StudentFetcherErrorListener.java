@@ -11,7 +11,7 @@ import com.android.volley.VolleyError;
  * Created by anirudh on 10/12/15.
  */
 public abstract class StudentFetcherErrorListener implements Response.ErrorListener {
-    private View mView;
+    protected View mView;
 
     public StudentFetcherErrorListener(View v) {
         mView = v;

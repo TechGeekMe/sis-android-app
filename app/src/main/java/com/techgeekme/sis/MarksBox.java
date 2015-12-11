@@ -16,14 +16,10 @@ public class MarksBox extends LinearLayout {
 
     public MarksBox(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-//        LayoutInflater.from(context).inflate(R.layout.marks_box, this, false);
-
     }
 
     public MarksBox(Context context, AttributeSet attrs) {
         super(context, attrs);
-//        LayoutInflater.from(context).inflate(R.layout.marks_box, this, false);
-
     }
 
     public void setMarks(int index, String marks) {
