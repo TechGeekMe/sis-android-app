@@ -1,20 +1,23 @@
 package com.techgeekme.sis;
 
 import android.app.Application;
+import android.app.ProgressDialog;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by anirudh on 31/07/15.
  */
-public class VolleyApplication extends Application {
+public class SisApplication extends Application {
 
-    private static VolleyApplication sInstance;
-
+    private static SisApplication sInstance;
+    public WeakReference<ProgressDialog> progressDialogWeakReference;
     private RequestQueue mRequestQueue;
 
-    public synchronized static VolleyApplication getInstance() {
+    public synchronized static SisApplication getInstance() {
         return sInstance;
     }
 

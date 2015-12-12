@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class Login extends AppCompatActivity {
@@ -22,9 +23,10 @@ public class Login extends AppCompatActivity {
     private EditText mDobEditText;
     private EditText mUsnEditText;
     private View mCoordinatorLayout;
-    private ProgressDialog mProgressDialog;
     private String usn;
     private String dob;
+    private boolean loggingIn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,14 +44,36 @@ public class Login extends AppCompatActivity {
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
             }
         });
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setMessage("Logging in");
-        mProgressDialog.setCancelable(false);
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean("loggingIn")) {
+            loggingIn = true;
+            resumeDialog();
+        } else {
+            SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(getProgressDialog());
+        }
+    }
+
+    public ProgressDialog getProgressDialog() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Logging in");
+        progressDialog.setCancelable(false);
+        return progressDialog;
+    }
+
+    private void resumeDialog() {
+        SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+        SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(getProgressDialog());
+        SisApplication.getInstance().progressDialogWeakReference.get().show();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("loggingIn", loggingIn);
     }
 
     private void displaySis() {
-        mProgressDialog.dismiss();
         Intent intent = new Intent(this, Home.class);
         startActivity(intent);
         finish();
@@ -62,7 +86,6 @@ public class Login extends AppCompatActivity {
         editor.putString("dob", dob);
         editor.putString("name", name);
         editor.apply();
-
     }
 
     private void storeCourses(ArrayList<Course> courses) {
@@ -71,12 +94,14 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View v) {
-        mProgressDialog.show();
+        loggingIn = true;
+        SisApplication.getInstance().progressDialogWeakReference.get().show();
         mLoginButton.setEnabled(false);
         StudentFetcherErrorListener el = new StudentFetcherErrorListener(mCoordinatorLayout) {
             @Override
             public void onStudentFetcherError() {
-                mProgressDialog.dismiss();
+                loggingIn = false;
+                SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
                 mLoginButton.setEnabled(true);
             }
         };
@@ -90,6 +115,8 @@ public class Login extends AppCompatActivity {
             public void onStudentResponse(Student s) {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
+                loggingIn = false;
+                SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
                 displaySis();
             }
         };
@@ -102,6 +129,13 @@ public class Login extends AppCompatActivity {
         mDobEditText.setText(dob);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Needed because the dialog needs to be dismissed before the activity is detroyed, resumeDialog executes afterwards
+        // and hence having dismiss there does not prevent the memory leak
+        SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+    }
 
     public static class DatePickerDialogFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
@@ -126,6 +160,4 @@ public class Login extends AppCompatActivity {
         }
 
     }
-
-
 }

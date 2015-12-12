@@ -42,7 +42,7 @@ public abstract class StudentFetcher extends Request<byte[]> {
     }
 
     public void fetchStudent() {
-        RequestQueue requestQueue = VolleyApplication.getInstance().getRequestQueue();
+        RequestQueue requestQueue = SisApplication.getInstance().getRequestQueue();
         requestQueue.add(this);
     }
 
