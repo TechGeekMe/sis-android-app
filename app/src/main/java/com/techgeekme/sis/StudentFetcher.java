@@ -19,7 +19,7 @@ public abstract class StudentFetcher extends Request<byte[]> {
 
     public StudentFetcher(String url, Response.ErrorListener listener) {
         super(Method.GET, url, listener);
-        setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        setRetryPolicy(new DefaultRetryPolicy(70000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     @Override
