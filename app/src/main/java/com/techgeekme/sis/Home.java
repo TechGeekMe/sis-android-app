@@ -1,5 +1,6 @@
 package com.techgeekme.sis;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
@@ -46,6 +49,8 @@ public class Home extends AppCompatActivity {
 
         mAdapter = new HomeRecyclerViewAdapter(mStudent.courses);
         mRecyclerView.setAdapter(mAdapter);
+
+        SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
     }
 
     @Override
@@ -81,7 +86,8 @@ public class Home extends AppCompatActivity {
         StudentFetcher studentFetcher = new StudentFetcher(url, el) {
             @Override
             public void onStudentResponse(Student s) {
-                Snackbar.make(mRecyclerView, "Refreshed", Snackbar.LENGTH_SHORT).show();
+                View coordinatorLayout = findViewById(R.id.coordinator_layout);
+                Snackbar.make(coordinatorLayout, "Refreshed", Snackbar.LENGTH_SHORT).show();
                 mDatabaseManager.putCourses(s.courses);
                 mStudent.courses.clear();
                 mStudent.courses.addAll(s.courses);

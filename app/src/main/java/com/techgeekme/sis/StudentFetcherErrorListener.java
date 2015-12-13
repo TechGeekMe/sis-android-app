@@ -2,6 +2,7 @@ package com.techgeekme.sis;
 
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
@@ -18,7 +19,7 @@ public abstract class StudentFetcherErrorListener implements Response.ErrorListe
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        View rootView = SisApplication.getInstance().currentActivityWeakReference.get().findViewById(android.R.id.content);
+        View rootView = ((ViewGroup) SisApplication.getInstance().currentActivityWeakReference.get().findViewById(android.R.id.content)).getChildAt(0);
         if (error.getClass() == NoConnectionError.class) {
             Snackbar.make(rootView, "Check your internet connection and try again", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.getClass() == TimeoutError.class) {
