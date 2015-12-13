@@ -1,5 +1,6 @@
 package com.techgeekme.sis;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -11,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -19,20 +19,18 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class Login extends AppCompatActivity {
-    private Button mLoginButton;
+    // I can make this static, it won't reference the whole activity, but then what about saving it in the bundle
+    private static boolean loggingIn = false;
     private EditText mDobEditText;
     private EditText mUsnEditText;
-    private View mCoordinatorLayout;
     private String usn;
     private String dob;
-    private boolean loggingIn;
-
+    private StudentFetcherErrorListener studentFetcherErrorListener;
+    private ProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        mCoordinatorLayout = findViewById(R.id.coordinator_layout);
-        mLoginButton = (Button) findViewById(R.id.login_button);
         mDobEditText = (EditText) findViewById(R.id.dob_edit_text);
         mUsnEditText = (EditText) findViewById(R.id.usn_edit_text);
         mDobEditText.setFocusable(false);
@@ -45,12 +43,13 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        if (savedInstanceState != null && savedInstanceState.getBoolean("loggingIn")) {
-            loggingIn = true;
+        if (loggingIn) {
             resumeDialog();
         } else {
-            SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(getProgressDialog());
+            mProgressDialog = getProgressDialog();
+            SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(mProgressDialog);
         }
+        SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
     }
 
     public ProgressDialog getProgressDialog() {
@@ -70,7 +69,6 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("loggingIn", loggingIn);
     }
 
     private void displaySis() {
@@ -96,21 +94,11 @@ public class Login extends AppCompatActivity {
     public void login(View v) {
         loggingIn = true;
         SisApplication.getInstance().progressDialogWeakReference.get().show();
-        mLoginButton.setEnabled(false);
-        StudentFetcherErrorListener el = new StudentFetcherErrorListener(mCoordinatorLayout) {
-            @Override
-            public void onStudentFetcherError() {
-                loggingIn = false;
-                SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
-                mLoginButton.setEnabled(true);
-            }
-        };
-
         usn = mUsnEditText.getText() + "";
         dob = mDobEditText.getText() + "";
         String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
 
-        StudentFetcher studentFetcher = new StudentFetcher(url, el) {
+        StudentFetcher studentFetcher = new StudentFetcher(url, new LoginStudentFetcherErrorListener()) {
             @Override
             public void onStudentResponse(Student s) {
                 storeLoginDetails(usn, dob, s.studentName);
@@ -124,7 +112,6 @@ public class Login extends AppCompatActivity {
         studentFetcher.fetchStudent();
     }
 
-
     private void setmDobEditText(String dob) {
         mDobEditText.setText(dob);
     }
@@ -135,6 +122,15 @@ public class Login extends AppCompatActivity {
         // Needed because the dialog needs to be dismissed before the activity is detroyed, resumeDialog executes afterwards
         // and hence having dismiss there does not prevent the memory leak
         SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+    }
+
+    private static class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
+
+        @Override
+        public void onStudentFetcherError() {
+            loggingIn = false;
+            SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+        }
     }
 
     public static class DatePickerDialogFragment extends DialogFragment
