@@ -70,7 +70,7 @@ public class Home extends AppCompatActivity {
     private void refresh() {
         mDatabaseManager.deleteAll();
 
-        StudentFetcherErrorListener el = new StudentFetcherErrorListener(mRecyclerView) {
+        StudentFetcherErrorListener el = new StudentFetcherErrorListener() {
             @Override
             public void onStudentFetcherError() {
             }

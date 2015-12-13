@@ -12,24 +12,23 @@ import com.android.volley.VolleyError;
  * Created by anirudh on 10/12/15.
  */
 public abstract class StudentFetcherErrorListener implements Response.ErrorListener {
-    protected View mView;
 
-    public StudentFetcherErrorListener(View v) {
-        mView = v;
+    public StudentFetcherErrorListener() {
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
+        View rootView = SisApplication.getInstance().currentActivityWeakReference.get().findViewById(android.R.id.content);
         if (error.getClass() == NoConnectionError.class) {
-            Snackbar.make(mView, "Check your internet connection and try again", Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(rootView, "Check your internet connection and try again", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.getClass() == TimeoutError.class) {
-            Snackbar.make(mView, "Could not connect to server, try again later", Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(rootView, "Could not connect to server, try again later", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.networkResponse.statusCode == 504) {
-            Snackbar.make(mView, "MSRIT SIS Server is down, try again later", Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(rootView, "MSRIT SIS Server is down, try again later", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.networkResponse.statusCode == 500) {
-            Snackbar.make(mView, "Oops! Something went wrong, try again later", Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(rootView, "Oops! Something went wrong, try again later", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.networkResponse.statusCode == 401) {
-            Snackbar.make(mView, "Incorrect USN or DOB", Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(rootView, "Incorrect USN or DOB", Snackbar.LENGTH_INDEFINITE).show();
         }
         onStudentFetcherError();
     }
