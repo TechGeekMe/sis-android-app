@@ -19,3 +19,5 @@
 -dontwarn android.net.http.AndroidHttpClient
 -dontwarn com.google.android.gms.**
 -dontwarn com.android.volley.toolbox.**
+-keep public class com.techgeekme.sis.Student { *; }
+-keep public class com.techgeekme.sis.Course { *; }
