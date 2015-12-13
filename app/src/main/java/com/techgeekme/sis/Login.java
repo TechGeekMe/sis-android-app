@@ -25,7 +25,7 @@ public class Login extends AppCompatActivity {
     private EditText mUsnEditText;
     private String usn;
     private String dob;
-    private StudentFetcherErrorListener studentFetcherErrorListener;
+    // This reference to the progress dialog is needed in order to prevent the GC from removing the currently active progress dialog
     private ProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
