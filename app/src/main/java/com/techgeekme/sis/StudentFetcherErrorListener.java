@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 
 /**
@@ -21,6 +22,8 @@ public abstract class StudentFetcherErrorListener implements Response.ErrorListe
     public void onErrorResponse(VolleyError error) {
         if (error.getClass() == NoConnectionError.class) {
             Snackbar.make(mView, "Check your internet connection and try again", Snackbar.LENGTH_INDEFINITE).show();
+        } else if (error.getClass() == TimeoutError.class) {
+            Snackbar.make(mView, "Could not connect to server, try again later", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.networkResponse.statusCode == 504) {
             Snackbar.make(mView, "MSRIT SIS Server is down, try again later", Snackbar.LENGTH_INDEFINITE).show();
         } else if (error.networkResponse.statusCode == 500) {
