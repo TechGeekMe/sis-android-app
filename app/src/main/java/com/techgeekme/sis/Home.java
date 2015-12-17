@@ -73,7 +73,6 @@ public class Home extends AppCompatActivity {
     }
 
     private void refresh() {
-        mDatabaseManager.deleteAll();
 
         StudentFetcherErrorListener el = new StudentFetcherErrorListener() {
             @Override
@@ -86,6 +85,7 @@ public class Home extends AppCompatActivity {
         StudentFetcher studentFetcher = new StudentFetcher(url, el) {
             @Override
             public void onStudentResponse(Student s) {
+                mDatabaseManager.deleteAll();
                 View coordinatorLayout = findViewById(R.id.coordinator_layout);
                 Snackbar.make(coordinatorLayout, "Refreshed", Snackbar.LENGTH_SHORT).show();
                 mDatabaseManager.putCourses(s.courses);
