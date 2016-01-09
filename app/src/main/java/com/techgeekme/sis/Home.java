@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 
 public class Home extends AppCompatActivity {
@@ -34,14 +33,14 @@ public class Home extends AppCompatActivity {
         mDatabaseManager = new DatabaseManager(this);
 
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        ArrayList<Course> courses = mDatabaseManager.getCourses();
         mStudent = new Student();
         mStudent.usn = sharedPref.getString("usn", null);
         mStudent.studentName = sharedPref.getString("name", null);
         mDob = sharedPref.getString("dob", null);
-        mStudent.courses = courses;
+        mStudent.courses = mDatabaseManager.getCourses();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.home_recycler_view);
+        // TODO Is this valid in this case
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -65,10 +64,9 @@ public class Home extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.clear();
         editor.apply();
+        mDatabaseManager.deleteAll();
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
-        DatabaseManager dm = new DatabaseManager(this);
-        dm.deleteAll();
         finish();
     }
 
@@ -87,21 +85,22 @@ public class Home extends AppCompatActivity {
             public void onStudentResponse(Student s) {
                 mDatabaseManager.deleteAll();
                 View coordinatorLayout = findViewById(R.id.coordinator_layout);
-                Snackbar.make(coordinatorLayout, "Refreshed", Snackbar.LENGTH_SHORT).show();
                 mDatabaseManager.putCourses(s.courses);
                 mStudent.courses.clear();
                 mStudent.courses.addAll(s.courses);
                 mAdapter.notifyDataSetChanged();
+                Snackbar.make(coordinatorLayout, "Refreshed", Snackbar.LENGTH_SHORT).show();
             }
         };
 
         studentFetcher.fetchStudent();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logout_button) {
             logout();
-        } else {
+        } else if (item.getItemId() == R.id.refresh_button) {
             refresh();
         }
         return true;
