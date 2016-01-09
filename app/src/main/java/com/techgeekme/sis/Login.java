@@ -18,6 +18,11 @@ import android.widget.EditText;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+
+/*
+* TODO Find out the best way to handle orientation change during async tasks
+* TODO Find the best way to show the dialog after rotation
+*/
 public class Login extends AppCompatActivity {
     // I can make this static, it won't reference the whole activity, but then what about saving it in the bundle
     private static boolean loggingIn = false;
@@ -27,6 +32,7 @@ public class Login extends AppCompatActivity {
     private String dob;
     // This reference to the progress dialog is needed in order to prevent the GC from removing the currently active progress dialog
     private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,14 +48,16 @@ public class Login extends AppCompatActivity {
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
             }
         });
-
+        createDialog();
         if (loggingIn) {
-            resumeDialog();
-        } else {
-            mProgressDialog = getProgressDialog();
-            SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(mProgressDialog);
+            mProgressDialog.show();
         }
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
+    }
+
+    public void createDialog() {
+        mProgressDialog = getProgressDialog();
+        SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(mProgressDialog);
     }
 
     public ProgressDialog getProgressDialog() {
@@ -58,12 +66,6 @@ public class Login extends AppCompatActivity {
         progressDialog.setMessage("Logging in");
         progressDialog.setCancelable(false);
         return progressDialog;
-    }
-
-    private void resumeDialog() {
-        SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
-        SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(getProgressDialog());
-        SisApplication.getInstance().progressDialogWeakReference.get().show();
     }
 
     @Override
@@ -93,7 +95,7 @@ public class Login extends AppCompatActivity {
 
     public void login(View v) {
         loggingIn = true;
-        SisApplication.getInstance().progressDialogWeakReference.get().show();
+        mProgressDialog.show();
         usn = mUsnEditText.getText() + "";
         dob = mDobEditText.getText() + "";
         String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
@@ -104,7 +106,7 @@ public class Login extends AppCompatActivity {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
                 loggingIn = false;
-                SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+                mProgressDialog.dismiss();
                 displaySis();
             }
         };
@@ -119,18 +121,8 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Needed because the dialog needs to be dismissed before the activity is detroyed, resumeDialog executes afterwards
-        // and hence having dismiss there does not prevent the memory leak
-        SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
-    }
-
-    private static class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
-
-        @Override
-        public void onStudentFetcherError() {
-            loggingIn = false;
-            SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
-        }
+        // A window should no leak out of the activity, hence it is important to dismiss the dialog before the activity is destroyed
+        mProgressDialog.dismiss();
     }
 
     public static class DatePickerDialogFragment extends DialogFragment
@@ -139,7 +131,6 @@ public class Login extends AppCompatActivity {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-
             // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, 1995, 0, 1);
         }
@@ -147,7 +138,7 @@ public class Login extends AppCompatActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
-            month += 1;
+            ++month;
             String paddedMonth = String.format("%02d", month);
             String paddedDay = String.format("%02d", day);
             StringBuilder dobString = new StringBuilder().append(year).append("-").append(paddedMonth).append("-").append(paddedDay);
@@ -155,5 +146,13 @@ public class Login extends AppCompatActivity {
             l.setmDobEditText(dobString.toString());
         }
 
+    }
+
+    private class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
+        @Override
+        public void onStudentFetcherError() {
+            loggingIn = false;
+            mProgressDialog.dismiss();
+        }
     }
 }
