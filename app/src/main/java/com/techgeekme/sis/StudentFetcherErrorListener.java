@@ -14,23 +14,22 @@ import com.android.volley.VolleyError;
  */
 public abstract class StudentFetcherErrorListener implements Response.ErrorListener {
 
-    public StudentFetcherErrorListener() {
-    }
-
     @Override
     public void onErrorResponse(VolleyError error) {
         View rootView = ((ViewGroup) SisApplication.getInstance().currentActivityWeakReference.get().findViewById(android.R.id.content)).getChildAt(0);
+        String message = null;
         if (error.getClass() == NoConnectionError.class) {
-            Snackbar.make(rootView, "Check your internet connection and try again", Snackbar.LENGTH_INDEFINITE).show();
+            message = "Check your internet connection and try again";
         } else if (error.getClass() == TimeoutError.class) {
-            Snackbar.make(rootView, "Could not connect to server, try again later", Snackbar.LENGTH_INDEFINITE).show();
+            message = "Could not connect to server, try again later";
         } else if (error.networkResponse.statusCode == 504) {
-            Snackbar.make(rootView, "MSRIT SIS Server is down, try again later", Snackbar.LENGTH_INDEFINITE).show();
+            message = "MSRIT SIS Server is down, try again later";
         } else if (error.networkResponse.statusCode == 500) {
-            Snackbar.make(rootView, "Oops! Something went wrong, try again later", Snackbar.LENGTH_INDEFINITE).show();
+            message = "Oops! Something went wrong, try again later";
         } else if (error.networkResponse.statusCode == 401) {
-            Snackbar.make(rootView, "Incorrect USN or DOB", Snackbar.LENGTH_INDEFINITE).show();
+            message = "Incorrect USN or DOB";
         }
+        Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE).show();
         onStudentFetcherError();
     }
 
