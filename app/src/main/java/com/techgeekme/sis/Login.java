@@ -21,11 +21,10 @@ import java.util.ArrayList;
 
 /*
 * TODO Find out the best way to handle orientation change during async tasks
-* TODO Find the best way to show the dialog after rotation
+* TODO Dismiss login even after orientation change
 */
 public class Login extends AppCompatActivity {
-    // I can make this static, it won't reference the whole activity, but then what about saving it in the bundle
-    private static boolean loggingIn = false;
+    private boolean loggingIn = false;
     private EditText mDobEditText;
     private EditText mUsnEditText;
     private String usn;
@@ -41,17 +40,21 @@ public class Login extends AppCompatActivity {
         mUsnEditText = (EditText) findViewById(R.id.usn_edit_text);
         mDobEditText.setFocusable(false);
         mDobEditText.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 DialogFragment datePickerFragment = new DatePickerDialogFragment();
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
             }
         });
+
         createDialog();
+        if (savedInstanceState != null) {
+            loggingIn = savedInstanceState.getBoolean("logging_in");
+        }
         if (loggingIn) {
             mProgressDialog.show();
         }
+
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
     }
 
@@ -70,6 +73,7 @@ public class Login extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("logging_in", loggingIn);
         super.onSaveInstanceState(outState);
     }
 
@@ -106,7 +110,7 @@ public class Login extends AppCompatActivity {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
                 loggingIn = false;
-                mProgressDialog.dismiss();
+                SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
                 displaySis();
             }
         };
@@ -152,7 +156,8 @@ public class Login extends AppCompatActivity {
         @Override
         public void onStudentFetcherError() {
             loggingIn = false;
-            mProgressDialog.dismiss();
+            SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
         }
     }
+
 }
