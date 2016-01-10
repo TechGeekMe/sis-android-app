@@ -5,14 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.lang.ref.WeakReference;
 
@@ -25,10 +26,14 @@ public class Home extends AppCompatActivity {
     private Student mStudent;
     private String mDob;
     private DatabaseManager mDatabaseManager;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private CoordinatorLayout mCoordinatorLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
+
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
         mDatabaseManager = new DatabaseManager(this);
 
@@ -48,6 +53,14 @@ public class Home extends AppCompatActivity {
 
         mAdapter = new HomeRecyclerViewAdapter(mStudent.courses);
         mRecyclerView.setAdapter(mAdapter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
 
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
     }
@@ -83,13 +96,14 @@ public class Home extends AppCompatActivity {
         StudentFetcher studentFetcher = new StudentFetcher(url, el) {
             @Override
             public void onStudentResponse(Student s) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                // TODO Too much to process on main thread, make it run in a seperate thread
                 mDatabaseManager.deleteAll();
-                View coordinatorLayout = findViewById(R.id.coordinator_layout);
                 mDatabaseManager.putCourses(s.courses);
                 mStudent.courses.clear();
                 mStudent.courses.addAll(s.courses);
                 mAdapter.notifyDataSetChanged();
-                Snackbar.make(coordinatorLayout, "Refreshed", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mCoordinatorLayout, "Refreshed", Snackbar.LENGTH_SHORT).show();
             }
         };
 
@@ -101,6 +115,7 @@ public class Home extends AppCompatActivity {
         if (item.getItemId() == R.id.logout_button) {
             logout();
         } else if (item.getItemId() == R.id.refresh_button) {
+            mSwipeRefreshLayout.setRefreshing(true);
             refresh();
         }
         return true;
