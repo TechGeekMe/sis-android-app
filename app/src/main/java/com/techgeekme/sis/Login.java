@@ -3,13 +3,13 @@ package com.techgeekme.sis;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
@@ -30,8 +30,8 @@ public class Login extends AppCompatActivity {
     private String usn;
     private String dob;
     // This reference to the progress dialog is needed in order to prevent the GC from removing the currently active progress dialog
-    private ProgressDialog mProgressDialog;
-
+    private LoadingDialogFragment loadingDialogFragment;
+    private FragmentManager fm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,34 +46,15 @@ public class Login extends AppCompatActivity {
                 datePickerFragment.show(getSupportFragmentManager(), "datePicker");
             }
         });
-
-        createDialog();
-        if (savedInstanceState != null) {
-            loggingIn = savedInstanceState.getBoolean("logging_in");
-        }
-        if (loggingIn) {
-            mProgressDialog.show();
-        }
-
+        fm = getSupportFragmentManager();
+        loadingDialogFragment = new LoadingDialogFragment();
+        ;
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
-    }
-
-    public void createDialog() {
-        mProgressDialog = getProgressDialog();
-        SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(mProgressDialog);
-    }
-
-    public ProgressDialog getProgressDialog() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Logging in");
-        progressDialog.setCancelable(false);
-        return progressDialog;
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean("logging_in", loggingIn);
+//        outState.putBoolean("logging_in", loggingIn);
         super.onSaveInstanceState(outState);
     }
 
@@ -99,7 +80,7 @@ public class Login extends AppCompatActivity {
 
     public void login(View v) {
         loggingIn = true;
-        mProgressDialog.show();
+        loadingDialogFragment.show(fm, "Hello");
         usn = mUsnEditText.getText() + "";
         dob = mDobEditText.getText() + "";
         String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
@@ -110,7 +91,7 @@ public class Login extends AppCompatActivity {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
                 loggingIn = false;
-                SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+                loadingDialogFragment.dismiss();
                 displaySis();
             }
         };
@@ -126,7 +107,7 @@ public class Login extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         // A window should no leak out of the activity, hence it is important to dismiss the dialog before the activity is destroyed
-        mProgressDialog.dismiss();
+        // loadingDialogFragment.dismiss();
     }
 
     public static class DatePickerDialogFragment extends DialogFragment
@@ -155,8 +136,7 @@ public class Login extends AppCompatActivity {
     private class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
         @Override
         public void onStudentFetcherError() {
-            loggingIn = false;
-            SisApplication.getInstance().progressDialogWeakReference.get().dismiss();
+            loadingDialogFragment.dismiss();
         }
     }
 
