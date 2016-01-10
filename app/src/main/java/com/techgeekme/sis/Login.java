@@ -29,9 +29,9 @@ public class Login extends AppCompatActivity {
     private EditText mUsnEditText;
     private String usn;
     private String dob;
-    // This reference to the progress dialog is needed in order to prevent the GC from removing the currently active progress dialog
     private LoadingDialogFragment loadingDialogFragment;
     private FragmentManager fm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +48,7 @@ public class Login extends AppCompatActivity {
         });
         fm = getSupportFragmentManager();
         loadingDialogFragment = new LoadingDialogFragment();
-        ;
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-//        outState.putBoolean("logging_in", loggingIn);
-        super.onSaveInstanceState(outState);
     }
 
     private void displaySis() {
@@ -101,13 +94,6 @@ public class Login extends AppCompatActivity {
 
     private void setmDobEditText(String dob) {
         mDobEditText.setText(dob);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // A window should no leak out of the activity, hence it is important to dismiss the dialog before the activity is destroyed
-        // loadingDialogFragment.dismiss();
     }
 
     public static class DatePickerDialogFragment extends DialogFragment
