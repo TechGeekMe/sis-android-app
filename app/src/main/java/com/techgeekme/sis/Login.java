@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -18,13 +19,11 @@ import android.widget.EditText;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-
 /*
 * TODO Find out the best way to handle orientation change during async tasks
 * TODO Dismiss login even after orientation change
 */
 public class Login extends AppCompatActivity {
-    private boolean loggingIn = false;
     private EditText mDobEditText;
     private EditText mUsnEditText;
     private String usn;
@@ -38,8 +37,16 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.login);
         mDobEditText = (EditText) findViewById(R.id.dob_edit_text);
         mUsnEditText = (EditText) findViewById(R.id.usn_edit_text);
-        mDobEditText.setFocusable(false);
+        mDobEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mDobEditText.performClick();
+                }
+            }
+        });
         mDobEditText.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 DialogFragment datePickerFragment = new DatePickerDialogFragment();
@@ -72,7 +79,18 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View v) {
-        loggingIn = true;
+        String usnPatternString = "^1[Mm][Ss]\\d\\d[A-Za-z][A-Za-z]\\d\\d\\d$";
+        if (!mUsnEditText.getText().toString().matches(usnPatternString)) {
+            mUsnEditText.requestFocus();
+            mUsnEditText.setError("Invalid USN");
+            return;
+        }
+
+        if (TextUtils.isEmpty(mDobEditText.getText())) {
+            mDobEditText.setError("Enter DOB");
+            return;
+        }
+
         loadingDialogFragment.show(fm, "Hello");
         usn = mUsnEditText.getText() + "";
         dob = mDobEditText.getText() + "";
@@ -83,7 +101,6 @@ public class Login extends AppCompatActivity {
             public void onStudentResponse(Student s) {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
-                loggingIn = false;
                 loadingDialogFragment.dismiss();
                 displaySis();
             }
