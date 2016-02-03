@@ -14,7 +14,7 @@
             android:name=".Login"
             android:label="@string/login" />
         <activity
-            android:name=".Home"
+            android:name=".HomeActivity"
             android:label="@string/home_label" />
         <activity android:name=".Splash">
             <intent-filter>

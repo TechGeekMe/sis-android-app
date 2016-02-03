@@ -13,7 +13,6 @@ import java.util.ArrayList;
  */
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewAdapter.CourseCardViewHolder> {
     private ArrayList<Course> mCourses;
-
     public HomeRecyclerViewAdapter(ArrayList<Course> courses) {
         mCourses = courses;
     }

@@ -59,7 +59,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void displaySis() {
-        Intent intent = new Intent(this, Home.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
         finish();
     }

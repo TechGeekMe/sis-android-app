@@ -34,7 +34,7 @@ public class Splash extends Activity {
             /* Create an Intent that will start the Menu-Activity. */
                 SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                 if (sharedPref.contains("usn")) {
-                    intent = new Intent(Splash.this, Home.class);
+                    intent = new Intent(Splash.this, HomeActivity.class);
                 } else {
                     intent = new Intent(Splash.this, Login.class);
                 }
