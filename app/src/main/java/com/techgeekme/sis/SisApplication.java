@@ -2,7 +2,6 @@ package com.techgeekme.sis;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.ProgressDialog;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -15,7 +14,7 @@ import java.lang.ref.WeakReference;
 public class SisApplication extends Application {
 
     private static SisApplication sInstance;
-    public WeakReference<ProgressDialog> progressDialogWeakReference;
+    public WeakReference<LoadingDialogFragment> loadingDialogFragmentWeakReference;
     public WeakReference<Activity> currentActivityWeakReference;
     private RequestQueue mRequestQueue;
 

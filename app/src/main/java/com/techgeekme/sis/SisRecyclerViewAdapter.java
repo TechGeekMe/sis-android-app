@@ -11,9 +11,10 @@ import java.util.ArrayList;
 /**
  * Created by anirudh on 03/12/15.
  */
-public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewAdapter.CourseCardViewHolder> {
+public class SisRecyclerViewAdapter extends RecyclerView.Adapter<SisRecyclerViewAdapter.CourseCardViewHolder> {
     private ArrayList<Course> mCourses;
-    public HomeRecyclerViewAdapter(ArrayList<Course> courses) {
+
+    public SisRecyclerViewAdapter(ArrayList<Course> courses) {
         mCourses = courses;
     }
     @Override

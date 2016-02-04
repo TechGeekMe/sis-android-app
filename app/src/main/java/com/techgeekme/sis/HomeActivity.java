@@ -32,7 +32,7 @@ public class HomeActivity extends AppCompatActivity {
         mViewPager.setAdapter(mHomePageAdapter);
         mDatabaseManager = new DatabaseManager(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_home);
         setSupportActionBar(toolbar);
 
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);

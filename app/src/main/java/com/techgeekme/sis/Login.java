@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.DatePicker;
@@ -21,20 +22,27 @@ import java.util.ArrayList;
 
 /*
 * TODO Find out the best way to handle orientation change during async tasks
-* TODO Dismiss login even after orientation change
+* TODO Dismiss activity_login even after orientation change
 */
 public class Login extends AppCompatActivity {
+    private static final String TAG_DIALOG = "dialog_loading";
     private EditText mDobEditText;
     private EditText mUsnEditText;
     private String usn;
     private String dob;
-    private LoadingDialogFragment loadingDialogFragment;
+    private LoadingDialogFragment mLoadingDialogFragment;
     private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.activity_login);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_login);
+        setSupportActionBar(toolbar);
+
+        fm = getSupportFragmentManager();
+
         mDobEditText = (EditText) findViewById(R.id.dob_edit_text);
         mUsnEditText = (EditText) findViewById(R.id.usn_edit_text);
         mDobEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -49,12 +57,11 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+                v.clearFocus();
                 DialogFragment datePickerFragment = new DatePickerDialogFragment();
-                datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+                datePickerFragment.show(fm, "date_picker");
             }
         });
-        fm = getSupportFragmentManager();
-        loadingDialogFragment = new LoadingDialogFragment();
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
     }
 
@@ -90,8 +97,8 @@ public class Login extends AppCompatActivity {
             mDobEditText.setError("Enter DOB");
             return;
         }
-
-        loadingDialogFragment.show(fm, "Hello");
+        mLoadingDialogFragment = new LoadingDialogFragment();
+        mLoadingDialogFragment.show(fm, TAG_DIALOG);
         usn = mUsnEditText.getText() + "";
         dob = mDobEditText.getText() + "";
         String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
@@ -101,7 +108,7 @@ public class Login extends AppCompatActivity {
             public void onStudentResponse(Student s) {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
-                loadingDialogFragment.dismiss();
+                SisApplication.getInstance().loadingDialogFragmentWeakReference.get().dismiss();
                 displaySis();
             }
         };
@@ -139,7 +146,7 @@ public class Login extends AppCompatActivity {
     private class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
         @Override
         public void onStudentFetcherError() {
-            loadingDialogFragment.dismiss();
+            SisApplication.getInstance().loadingDialogFragmentWeakReference.get().dismiss();
         }
     }
 

@@ -1,8 +1,7 @@
 <resources>
     <string name="app_name">SIS</string>
-    <string name="login">Login</string>
-    <string name="action_settings">Settings</string>
-    <string name="home_label">SIS</string>
+    <string name="login_title">SIS MSRIT</string>
+    <string name="sis_title">SIS</string>
     <string name="server_url">http://sismsrit.azurewebsites.net/api</string>
     <string name="preference_file_key">credentials_shared_pref</string>
 </resources>

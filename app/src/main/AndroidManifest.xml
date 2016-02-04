@@ -12,10 +12,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Login"
-            android:label="@string/login" />
+            android:label="@string/login_title" />
         <activity
             android:name=".HomeActivity"
-            android:label="@string/home_label" />
+            android:label="@string/sis_title" />
         <activity android:name=".Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

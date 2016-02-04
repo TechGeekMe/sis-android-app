@@ -1,23 +1,25 @@
 package com.techgeekme.sis;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by anirudh on 10/01/16.
  */
 public class LoadingDialogFragment extends DialogFragment {
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setRetainInstance(true);
-        View rootView = inflater.inflate(R.layout.loading_dialog, container, false);
-        getDialog().setTitle("Loading!");
-        return rootView;
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        SisApplication.getInstance().loadingDialogFragmentWeakReference = new WeakReference<LoadingDialogFragment>(this);
+        setCancelable(false);
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading...");
+        return progressDialog;
     }
 
     @Override

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ public class SisFragment extends Fragment {
 
     // TODO Implement all network calls in a service
 
+    private static final String TAG  = "SIS Fragment";
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -33,8 +35,10 @@ public class SisFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "On create called");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -42,12 +46,9 @@ public class SisFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sis, container, false);
 
-        setRetainInstance(true);
-
         mDatabaseManager = new DatabaseManager(getContext());
 
         mCoordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.coordinator_layout);
-
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         mStudent = new Student();
@@ -63,9 +64,8 @@ public class SisFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new HomeRecyclerViewAdapter(mStudent.courses);
+        mAdapter = new SisRecyclerViewAdapter(mStudent.courses);
         mRecyclerView.setAdapter(mAdapter);
-
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
