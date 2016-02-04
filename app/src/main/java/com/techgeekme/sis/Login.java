@@ -3,14 +3,16 @@ package com.techgeekme.sis;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -18,63 +20,53 @@ import android.widget.EditText;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-
 /*
 * TODO Find out the best way to handle orientation change during async tasks
-* TODO Find the best way to show the dialog after rotation
+* TODO Dismiss activity_login even after orientation change
 */
 public class Login extends AppCompatActivity {
-    // I can make this static, it won't reference the whole activity, but then what about saving it in the bundle
-    private static boolean loggingIn = false;
+    private static final String TAG_DIALOG = "dialog_loading";
     private EditText mDobEditText;
     private EditText mUsnEditText;
     private String usn;
     private String dob;
-    // This reference to the progress dialog is needed in order to prevent the GC from removing the currently active progress dialog
-    private ProgressDialog mProgressDialog;
+    private LoadingDialogFragment mLoadingDialogFragment;
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.activity_login);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_login);
+        setSupportActionBar(toolbar);
+
+        fm = getSupportFragmentManager();
+
         mDobEditText = (EditText) findViewById(R.id.dob_edit_text);
         mUsnEditText = (EditText) findViewById(R.id.usn_edit_text);
-        mDobEditText.setFocusable(false);
+        mDobEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mDobEditText.performClick();
+                }
+            }
+        });
         mDobEditText.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                v.clearFocus();
                 DialogFragment datePickerFragment = new DatePickerDialogFragment();
-                datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+                datePickerFragment.show(fm, "date_picker");
             }
         });
-        createDialog();
-        if (loggingIn) {
-            mProgressDialog.show();
-        }
         SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
     }
 
-    public void createDialog() {
-        mProgressDialog = getProgressDialog();
-        SisApplication.getInstance().progressDialogWeakReference = new WeakReference<>(mProgressDialog);
-    }
-
-    public ProgressDialog getProgressDialog() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Logging in");
-        progressDialog.setCancelable(false);
-        return progressDialog;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     private void displaySis() {
-        Intent intent = new Intent(this, Home.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
         finish();
     }
@@ -94,8 +86,19 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View v) {
-        loggingIn = true;
-        mProgressDialog.show();
+        String usnPatternString = "^1[Mm][Ss]\\d\\d[A-Za-z][A-Za-z]\\d\\d\\d$";
+        if (!mUsnEditText.getText().toString().matches(usnPatternString)) {
+            mUsnEditText.requestFocus();
+            mUsnEditText.setError("Invalid USN");
+            return;
+        }
+
+        if (TextUtils.isEmpty(mDobEditText.getText())) {
+            mDobEditText.setError("Enter DOB");
+            return;
+        }
+        mLoadingDialogFragment = new LoadingDialogFragment();
+        mLoadingDialogFragment.show(fm, TAG_DIALOG);
         usn = mUsnEditText.getText() + "";
         dob = mDobEditText.getText() + "";
         String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
@@ -105,8 +108,7 @@ public class Login extends AppCompatActivity {
             public void onStudentResponse(Student s) {
                 storeLoginDetails(usn, dob, s.studentName);
                 storeCourses(s.courses);
-                loggingIn = false;
-                mProgressDialog.dismiss();
+                SisApplication.getInstance().loadingDialogFragmentWeakReference.get().dismiss();
                 displaySis();
             }
         };
@@ -116,13 +118,6 @@ public class Login extends AppCompatActivity {
 
     private void setmDobEditText(String dob) {
         mDobEditText.setText(dob);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // A window should no leak out of the activity, hence it is important to dismiss the dialog before the activity is destroyed
-        mProgressDialog.dismiss();
     }
 
     public static class DatePickerDialogFragment extends DialogFragment
@@ -151,8 +146,8 @@ public class Login extends AppCompatActivity {
     private class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
         @Override
         public void onStudentFetcherError() {
-            loggingIn = false;
-            mProgressDialog.dismiss();
+            SisApplication.getInstance().loadingDialogFragmentWeakReference.get().dismiss();
         }
     }
+
 }

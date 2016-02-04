@@ -90,7 +90,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
             }
             db.insert(TABLE_COURSE, null, courseValues);
         }
-
         db.close();
     }
 
@@ -112,8 +111,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
             while (testCursor.moveToNext()) {
                 c.tests.add(testCursor.getString(testCursor.getColumnIndex(KEY_MARKS)));
             }
-            String assingmentQuery = "SELECT  * FROM " + TABLE_ASSIGNMENT + " WHERE " + KEY_COURSE_CODE + "='" + c.courseCode + "'" + " ORDER BY " + KEY_TEST_NUMBER;
-            testCursor = db.rawQuery(assingmentQuery, null);
+            String assignmentQuery = "SELECT  * FROM " + TABLE_ASSIGNMENT + " WHERE " + KEY_COURSE_CODE + "='" + c.courseCode + "'" + " ORDER BY " + KEY_TEST_NUMBER;
+            testCursor = db.rawQuery(assignmentQuery, null);
             while (testCursor.moveToNext()) {
                 c.assignments.add(testCursor.getString(testCursor.getColumnIndex(KEY_MARKS)));
             }
@@ -129,6 +128,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         db.execSQL("delete from " + TABLE_COURSE);
         db.execSQL("delete from " + TABLE_TEST);
         db.execSQL("delete from " + TABLE_ASSIGNMENT);
+        db.close();
     }
 
 }
