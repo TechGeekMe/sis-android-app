@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.techgeekme.sis.MarksBox xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tests_linear_layout"
     android:layout_width="100dp"
     android:layout_height="wrap_content"
     android:layout_below="@id/attendance_percent_text_view"

@@ -4,7 +4,12 @@
     <item
         android:id="@+id/menu_logout"
         android:icon="@drawable/logout_button"
-        android:title="Logout"
+        android:title="@string/action_logout"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 </menu>
 

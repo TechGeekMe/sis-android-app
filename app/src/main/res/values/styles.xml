@@ -7,6 +7,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPimaryDark</item>
         <item name="colorAccent">@color/colorPimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPimaryDark</item>
         <item name="android:textViewStyle">@style/TextStyle</item>
         <item name="colorButtonNormal">@color/colorPrimary</item>
         <item name="android:datePickerDialogTheme">@style/AppDatePickerDialogTheme</item>

@@ -5,6 +5,8 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 
 import java.io.ByteArrayInputStream;
@@ -14,11 +16,13 @@ import java.io.ObjectInputStream;
 /**
  * Created by anirudh on 10/12/15.
  */
-public abstract class StudentFetcher extends Request<byte[]> {
+public class StudentFetcher extends Request<byte[]> {
 
+    private Listener mListener;
 
-    public StudentFetcher(String url, Response.ErrorListener listener) {
-        super(Method.GET, url, listener);
+    public StudentFetcher(String url, Listener listener, ErrorListener errorListener) {
+        super(Method.GET, url, errorListener);
+        mListener = listener;
         setRetryPolicy(new DefaultRetryPolicy(70000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
@@ -35,7 +39,8 @@ public abstract class StudentFetcher extends Request<byte[]> {
         try {
             ois = new ObjectInputStream(bais);
             s = (Student) ois.readObject();
-            onStudentResponse(s);
+//            onStudentResponse(s);
+            mListener.onResponse(s);
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
@@ -44,9 +49,9 @@ public abstract class StudentFetcher extends Request<byte[]> {
     public void fetchStudent() {
         RequestQueue requestQueue = SisApplication.getInstance().getRequestQueue();
         requestQueue.add(this);
+
     }
 
-    public abstract void onStudentResponse(Student s);
 
 }
 

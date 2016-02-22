@@ -1,37 +1,36 @@
 package com.techgeekme.sis;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import com.techgeekme.sis.sync.SisSyncAdapter;
 
-/*
-* TODO Find out the best way to handle orientation change during async tasks
-* TODO Dismiss activity_login even after orientation change
-*/
 public class Login extends AppCompatActivity {
+    private static final String LOG_TAG = Login.class.getSimpleName();
     private static final String TAG_DIALOG = "dialog_loading";
     private EditText mDobEditText;
     private EditText mUsnEditText;
-    private String usn;
-    private String dob;
     private LoadingDialogFragment mLoadingDialogFragment;
-    private FragmentManager fm;
+    private FragmentManager mFragmentManager;
+    private SyncStatusReceiver mSyncStatusReceiver;
+    private CoordinatorLayout mCoordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +40,15 @@ public class Login extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_login);
         setSupportActionBar(toolbar);
 
-        fm = getSupportFragmentManager();
+        mSyncStatusReceiver = new SyncStatusReceiver();
+
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+
+        mFragmentManager = getFragmentManager();
 
         mDobEditText = (EditText) findViewById(R.id.dob_edit_text);
         mUsnEditText = (EditText) findViewById(R.id.usn_edit_text);
+
         mDobEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -53,16 +57,21 @@ public class Login extends AppCompatActivity {
                 }
             }
         });
+
         mDobEditText.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 v.clearFocus();
                 DialogFragment datePickerFragment = new DatePickerDialogFragment();
-                datePickerFragment.show(fm, "date_picker");
+                datePickerFragment.show(mFragmentManager, "date_picker");
             }
         });
-        SisApplication.getInstance().currentActivityWeakReference = new WeakReference<Activity>(this);
+
+        mLoadingDialogFragment = (LoadingDialogFragment) mFragmentManager.findFragmentByTag(TAG_DIALOG);
+        if (mLoadingDialogFragment == null) {
+            mLoadingDialogFragment = new LoadingDialogFragment();
+        }
     }
 
     private void displaySis() {
@@ -71,19 +80,19 @@ public class Login extends AppCompatActivity {
         finish();
     }
 
-    private void storeLoginDetails(String usn, String dob, String name) {
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("usn", usn);
-        editor.putString("dob", dob);
-        editor.putString("name", name);
-        editor.apply();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(SisSyncAdapter.ACTION_SYNC_FINSISHED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSyncStatusReceiver, intentFilter);
     }
 
-    private void storeCourses(ArrayList<Course> courses) {
-        DatabaseManager dm = new DatabaseManager(this);
-        dm.putCourses(courses);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncStatusReceiver);
     }
+
 
     public void login(View v) {
         String usnPatternString = "^1[Mm][Ss]\\d\\d[A-Za-z][A-Za-z]\\d\\d\\d$";
@@ -98,26 +107,26 @@ public class Login extends AppCompatActivity {
             return;
         }
         mLoadingDialogFragment = new LoadingDialogFragment();
-        mLoadingDialogFragment.show(fm, TAG_DIALOG);
-        usn = mUsnEditText.getText() + "";
-        dob = mDobEditText.getText() + "";
-        String url = getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
-
-        StudentFetcher studentFetcher = new StudentFetcher(url, new LoginStudentFetcherErrorListener()) {
-            @Override
-            public void onStudentResponse(Student s) {
-                storeLoginDetails(usn, dob, s.studentName);
-                storeCourses(s.courses);
-                SisApplication.getInstance().loadingDialogFragmentWeakReference.get().dismiss();
-                displaySis();
-            }
-        };
-
-        studentFetcher.fetchStudent();
+        mLoadingDialogFragment.show(mFragmentManager, TAG_DIALOG);
+        String usn = mUsnEditText.getText() + "";
+        String dob = mDobEditText.getText() + "";
+        Utility.storeLoginDetails(this, usn, dob);
+        SisSyncAdapter.initializeSyncAdapter(this);
     }
 
     private void setmDobEditText(String dob) {
         mDobEditText.setText(dob);
+    }
+
+    private void showOrHideDialog(boolean loggingIn) {
+        if (loggingIn && mLoadingDialogFragment.getDialog() == null) {
+            mLoadingDialogFragment.show(mFragmentManager, TAG_DIALOG);
+        }
+//        else {
+//            if (mLoadingDialogFragment != null) {
+//                mLoadingDialogFragment.dismiss();
+//            }
+//        }
     }
 
     public static class DatePickerDialogFragment extends DialogFragment
@@ -143,11 +152,26 @@ public class Login extends AppCompatActivity {
 
     }
 
-    private class LoginStudentFetcherErrorListener extends StudentFetcherErrorListener {
+    public class SyncStatusReceiver extends BroadcastReceiver {
         @Override
-        public void onStudentFetcherError() {
-            SisApplication.getInstance().loadingDialogFragmentWeakReference.get().dismiss();
+        public void onReceive(Context context, Intent intent) {
+            if (mLoadingDialogFragment.getDialog() != null) {
+                mLoadingDialogFragment.dismissAllowingStateLoss();
+            }
+            switch (intent.getStringExtra(SisSyncAdapter.EXTRA_SYNC_STATUS)) {
+                case SisSyncAdapter.SYNC_FAIL:
+                    int statusCode = intent.getIntExtra(SisSyncAdapter.EXTRA_ERROR_CODE, -1);
+                    Utility.showErrorSnackBar(mCoordinatorLayout, statusCode);
+                    return;
+                case SisSyncAdapter.SYNC_SUCCESS:
+                    Intent homeActivity = new Intent(Login.this, HomeActivity.class);
+                    startActivity(homeActivity);
+                    finish();
+                    return;
+                default:
+                    Log.e(LOG_TAG, "Invalid intent extra for SyncStatusReceiver");
+            }
+
         }
     }
-
 }

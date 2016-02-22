@@ -1,9 +1,5 @@
 package com.techgeekme.sis;
 
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.android.volley.NoConnectionError;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
@@ -16,7 +12,7 @@ public abstract class StudentFetcherErrorListener implements Response.ErrorListe
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        View rootView = ((ViewGroup) SisApplication.getInstance().currentActivityWeakReference.get().findViewById(android.R.id.content)).getChildAt(0);
+//        View rootView = ((ViewGroup) SisApplication.getInstance().currentActivityWeakReference.get().findViewById(android.R.id.content)).getChildAt(0);
         String message = null;
         if (error.getClass() == NoConnectionError.class) {
             message = "Check your internet connection and try again";
@@ -29,7 +25,7 @@ public abstract class StudentFetcherErrorListener implements Response.ErrorListe
         } else if (error.networkResponse.statusCode == 401) {
             message = "Incorrect USN or DOB";
         }
-        Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE).show();
+//        Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE).show();
         onStudentFetcherError();
     }
 

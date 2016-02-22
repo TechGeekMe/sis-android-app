@@ -1,12 +1,10 @@
 package com.techgeekme.sis;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Created by anirudh on 10/01/16.
@@ -15,9 +13,8 @@ public class LoadingDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        SisApplication.getInstance().loadingDialogFragmentWeakReference = new WeakReference<LoadingDialogFragment>(this);
         setCancelable(false);
-        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading...");
         return progressDialog;
     }
