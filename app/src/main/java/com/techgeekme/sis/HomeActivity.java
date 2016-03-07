@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -79,11 +78,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private void logout() {
         SisSyncAdapter.stopAutoSync(this);
+        Utility.setLoggedIn(this, false);
         getContentResolver().delete(SisContract.ALL_TABLES_CONTENT_URI, null, null);
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_pref_file), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.clear();
-        editor.apply();
         Intent intent = new Intent(this, Login.class);
         startActivity(intent);
         finish();
