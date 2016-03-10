@@ -60,6 +60,13 @@ public class Utility {
         editor.commit();
     }
 
+    public static void storeName(Context context, String name) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(context.getString(R.string.pref_key_name), name);
+        editor.commit();
+    }
+
     public static boolean isLoggedIn(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPref.getBoolean(context.getString(R.string.pref_key_logged_in), false);

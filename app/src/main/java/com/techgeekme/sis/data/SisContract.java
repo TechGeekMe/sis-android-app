@@ -41,7 +41,8 @@ public class SisContract {
         public static final String COLUMN_ATTENDANCE_PERCENT = "attendance_percent";
         public static final String COLUMN_CLASSES_ATTENDED = "classes_attended";
         public static final String COLUMN_CLASSES_HELD = "classes_held";
-
+        public static final String COLUMN_CLASSES_REMAINING = "classes_remaining";
+        public static final String COLUMN_CLASSES_ABSENT = "classes_absent";
         public static Uri buildCourseUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }

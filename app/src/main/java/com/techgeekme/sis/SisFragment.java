@@ -106,7 +106,6 @@ public class SisFragment extends Fragment implements LoaderManager.LoaderCallbac
         mStudent = new Student();
         mStudent.usn = sharedPref.getString("usn", null);
         mStudent.studentName = sharedPref.getString("name", null);
-        mStudent.courses = new ArrayList<>();
 
         mRecyclerView = (RecyclerView) v.findViewById(R.id.home_recycler_view);
         // TODO Is this valid in this case

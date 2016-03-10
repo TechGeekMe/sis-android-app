@@ -42,7 +42,6 @@ public class SisLoader extends AsyncTaskLoader<ArrayList<Course>> {
             while (courseCursor.moveToNext()) {
                 Course c = new Course();
                 c.courseName = courseCursor.getString(CourseColumns.COL_COURSE_NAME);
-                c.credits = courseCursor.getString(CourseColumns.COL_CREDITS);
                 c.attendancePercent = courseCursor.getString(CourseColumns.COL_ATTENDANCE_PERCENT);
                 c.classesAttended = courseCursor.getString(CourseColumns.COL_CLASSES_ATTENDED);
                 c.classesHeld = courseCursor.getString(CourseColumns.COL_CLASSES_HELD);
@@ -99,14 +98,12 @@ public class SisLoader extends AsyncTaskLoader<ArrayList<Course>> {
         // must change.
         static final int COL_COURSE_CODE = 0;
         static final int COL_COURSE_NAME = 1;
-        static final int COL_CREDITS = 2;
-        static final int COL_ATTENDANCE_PERCENT = 3;
-        static final int COL_CLASSES_ATTENDED = 4;
-        static final int COL_CLASSES_HELD = 5;
+        static final int COL_ATTENDANCE_PERCENT = 2;
+        static final int COL_CLASSES_ATTENDED = 3;
+        static final int COL_CLASSES_HELD = 4;
         private static final String[] COURSE_COLUMN_NAMES = {
                 SisContract.CourseEntry.COLUMN_COURSE_CODE,
                 SisContract.CourseEntry.COLUMN_COURSE_NAME,
-                SisContract.CourseEntry.COLUMN_CREDITS,
                 SisContract.CourseEntry.COLUMN_ATTENDANCE_PERCENT,
                 SisContract.CourseEntry.COLUMN_CLASSES_ATTENDED,
                 SisContract.CourseEntry.COLUMN_CLASSES_HELD

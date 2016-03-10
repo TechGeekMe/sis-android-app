@@ -28,7 +28,6 @@ public class SisRecyclerViewAdapter extends RecyclerView.Adapter<SisRecyclerView
     public void onBindViewHolder(CourseCardViewHolder holder, int position) {
         Course currentCourse = mCourses.get(position);
         holder.courseNameTextView.setText(currentCourse.courseName);
-        holder.creditsTextView.setText("Credits: " + currentCourse.credits);
         holder.attendanceFractonTextView.setText(currentCourse.classesAttended + " / " + currentCourse.classesHeld);
         holder.attendancePercentTextView.setText(currentCourse.attendancePercent + "%");
         holder.courseCodeTextView.setText(currentCourse.courseCode);
@@ -52,7 +51,6 @@ public class SisRecyclerViewAdapter extends RecyclerView.Adapter<SisRecyclerView
         public CourseCardViewHolder(View subjectCardView) {
             super(subjectCardView);
             courseNameTextView = (TextView) subjectCardView.findViewById(R.id.course_name_text_view);
-            creditsTextView = (TextView) subjectCardView.findViewById(R.id.credits_text_view);
             attendancePercentTextView = (TextView) subjectCardView.findViewById(R.id.attendance_percent_text_view);
             attendanceFractonTextView = (TextView) subjectCardView.findViewById(R.id.attendance_fraction_text_view);
             courseCodeTextView = (TextView) subjectCardView.findViewById(R.id.course_code_text_view);

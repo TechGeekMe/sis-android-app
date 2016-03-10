@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.RequestQueue;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
@@ -26,6 +27,10 @@ import com.techgeekme.sis.Student;
 import com.techgeekme.sis.StudentFetcher;
 import com.techgeekme.sis.Utility;
 import com.techgeekme.sis.data.SisContract;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -181,19 +186,47 @@ public class SisSyncAdapter extends AbstractThreadedSyncAdapter {
         String usn = Utility.getUsnFromSharedPref(getContext());
         String dob = Utility.getDobFromSharedPref(getContext());
         String url = getContext().getString(R.string.server_url) + "?usn=" + usn + "&dob=" + dob;
-        RequestFuture<Student> future = RequestFuture.newFuture();
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
         StudentFetcher studentFetcher = new StudentFetcher(url, future, future);
         RequestQueue requestQueue = SisApplication.getInstance().getRequestQueue();
         requestQueue.add(studentFetcher);
-        Student s = null;
+        JSONObject studentJson;
+        Student s = new Student();
         Intent syncIntent = new Intent(ACTION_SYNC_FINSISHED);
         try {
-            s = future.get(70, TimeUnit.SECONDS);
+            studentJson = future.get(70, TimeUnit.SECONDS);
+            s.studentName = studentJson.getString("name");
+            s.usn = studentJson.getString("usn");
+            JSONArray coursesJsonArray = studentJson.getJSONArray("courses");
+            for (int i = 0; i < coursesJsonArray.length(); i++) {
+                JSONObject course = coursesJsonArray.getJSONObject(i);
+                Course c = new Course();
+                c.courseCode = course.getString("code");
+                c.courseName = course.getString("name");
+                JSONObject attendanceJson = course.getJSONObject("attendance");
+                c.attendancePercent = attendanceJson.getString("percentage");
+                c.classesAttended = attendanceJson.getString("attended");
+                c.classesAbsent = attendanceJson.getString("absent");
+                c.classesRemaining = attendanceJson.getString("remaining");
+                c.classesHeld = String.valueOf(Integer.parseInt(c.classesAbsent) + Integer.parseInt(c.classesAttended));
+                JSONArray assignmentsJsonArray = course.getJSONArray("assignments");
+                for (int j = 0; j < assignmentsJsonArray.length(); j++) {
+                    String assignment = assignmentsJsonArray.getString(j);
+                    c.assignments.add(assignment);
+                }
+                JSONArray testsJsonArray = course.getJSONArray("tests");
+                for (int j = 0; j < testsJsonArray.length(); j++) {
+                    String test = testsJsonArray.getString(j);
+                    c.tests.add(test);
+                }
+                s.courses.add(c);
+            }
+            Utility.storeName(getContext(), s.studentName);
             deleteCourses();
             storeCourses(s.courses);
             Utility.setLoggedIn(getContext(), true);
             syncIntent.putExtra(EXTRA_SYNC_STATUS, SYNC_SUCCESS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException | JSONException e) {
             LOGE(LOG_TAG, e.toString());
             syncIntent.putExtra(EXTRA_SYNC_STATUS, SYNC_FAIL);
             Throwable cause = e.getCause();
@@ -203,7 +236,10 @@ public class SisSyncAdapter extends AbstractThreadedSyncAdapter {
                     syncIntent.putExtra(EXTRA_ERROR_CODE, ERROR_NO_CONNECTION);
                 } else if (volleyError.getClass() == TimeoutError.class) {
                     syncIntent.putExtra(EXTRA_ERROR_CODE, ERROR_TIMEOUT);
+                } else if (volleyError.getClass() == ParseError.class) {
+                    syncIntent.putExtra(EXTRA_ERROR_CODE, ERROR_OTHER);
                 } else {
+                    // TODO: Null pointer exception possible
                     syncIntent.putExtra(EXTRA_ERROR_CODE, volleyError.networkResponse.statusCode);
                 }
             } else if (e instanceof TimeoutException) {
@@ -230,10 +266,11 @@ public class SisSyncAdapter extends AbstractThreadedSyncAdapter {
             Course course = courses.get(i);
             courseValues.put(SisContract.CourseEntry.COLUMN_COURSE_CODE, course.courseCode);
             courseValues.put(SisContract.CourseEntry.COLUMN_COURSE_NAME, course.courseName);
-            courseValues.put(SisContract.CourseEntry.COLUMN_CREDITS, course.credits);
             courseValues.put(SisContract.CourseEntry.COLUMN_ATTENDANCE_PERCENT, course.attendancePercent);
             courseValues.put(SisContract.CourseEntry.COLUMN_CLASSES_HELD, course.classesHeld);
             courseValues.put(SisContract.CourseEntry.COLUMN_CLASSES_ATTENDED, course.classesAttended);
+            courseValues.put(SisContract.CourseEntry.COLUMN_CLASSES_ABSENT, course.classesAbsent);
+            courseValues.put(SisContract.CourseEntry.COLUMN_CLASSES_REMAINING, course.classesRemaining);
             courseCVArrayList.add(courseValues);
             ArrayList<String> tests = course.tests;
             for (int j = 0; j < tests.size(); j++) {
