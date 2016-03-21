@@ -41,6 +41,8 @@ public class Login extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mSyncStatusReceiver = new SyncStatusReceiver();
+        IntentFilter intentFilter = new IntentFilter(SisSyncAdapter.ACTION_SYNC_FINSISHED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSyncStatusReceiver, intentFilter);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
@@ -83,16 +85,14 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        IntentFilter intentFilter = new IntentFilter(SisSyncAdapter.ACTION_SYNC_FINSISHED);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSyncStatusReceiver, intentFilter);
+
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncStatusReceiver);
     }
-
 
     public void login(View v) {
         String usnPatternString = "^1[Mm][Ss]\\d\\d[A-Za-z][A-Za-z]\\d\\d\\d$";
